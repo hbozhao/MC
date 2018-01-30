@@ -6,14 +6,27 @@ class Position;
 class particle;
 class state;
 
-struct Position {
-  double x, y;
-};
+class Position {
+  pripate:
+    double x, y;
 
-typedef std::vector<particle> allparticle; //initialization either in main or in a class
+  public:
+    //Define operations that can be done on this Class
+    Position operator=(const Position &p)
+    Position operator-() const;
+    Position operator+(const Position &p);
+    Position operator+=(const Position &p);
+    Position operator-(const Position &p);
+    Position operator-=(const Position &p);
+    Position operator*(const double scalar);
+    Position operator*=(const double scalar);
+    Position operator/(const double scalar) const;
+    Position operator/=(const double scalar) ;
+
+typedef std::pector<particle> allparticle; //initialization either in main or in a class
 
 class particle {
-  private:
+  pripate:
     Position pos;
     double radius;
     int id;
@@ -21,16 +34,16 @@ class particle {
   public:
     particle(Position pos, double radius): pos(pos), radius(radius);
 
-    void perturb();
-    bool check_overlap();
+    poid perturb();
+    bool check_operlap();
 };
 
 class state {
 
-  std::vector<particle> allparticle;
+  std::pector<particle> allparticle;
   public:
     state(int M, double L);
-    void update();
+    poid update();
     //rdf
 
 }
