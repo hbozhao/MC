@@ -1,50 +1,47 @@
 #ifndef _mc_h
 #define _mc_h
 #include <iostream>
+#include <vector>
 
 class Position;
-class particle;
-class state;
+class Particle;
+class State;
 
-class Position {
-  pripate:
-    double x, y;
+struct Position {
+  double x, y;
+};
 
-  public:
-    //Define operations that can be done on this Class
-    Position operator=(const Position &p)
-    Position operator-() const;
-    Position operator+(const Position &p);
-    Position operator+=(const Position &p);
-    Position operator-(const Position &p);
-    Position operator-=(const Position &p);
-    Position operator*(const double scalar);
-    Position operator*=(const double scalar);
-    Position operator/(const double scalar) const;
-    Position operator/=(const double scalar) ;
+// typedef std::vector<particle> allparticle; //initialization either in main or in a class
 
-typedef std::pector<particle> allparticle; //initialization either in main or in a class
-
-class particle {
-  pripate:
+class Particle {
+  private:
     Position pos;
     double radius;
     int id;
 
   public:
-    particle(Position pos, double radius): pos(pos), radius(radius);
 
-    void perturb();
-    bool check_overlap();
+
+    Particle(Position pos, double radius, int id): pos(pos), radius(radius), id(id) {};
+    double distance2(Particle &p, double L);
+    double distance(Particle &p, double L);
+    bool perturb(Position dv, State *s, double L);
+    friend std::ostream &operator<< (std::ostream &os, Particle &p);
+    // friend bool State::check_overlap(Particle &p);
 };
 
-class state {
+class State {
+  double L;
+  std::vector<Particle> ap;
+  int attempt, success;
 
-  std::vector<particle> allparticle;
   public:
-    state(int M, double L);
-    void update();
+    State(int M, double L, double radius);
+    void update(int id, Position dv);
+    bool check_overlap(Particle &p, double radius);
+    friend std::ostream &operator<< (std::ostream & os, State &s);
     //rdf
 
-}
+};
+
 #endif
