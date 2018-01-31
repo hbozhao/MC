@@ -5,6 +5,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <vector>
+#include <ctime>
 #include "mc.h"
 
 double Particle::distance2(Particle &p, double L) {
@@ -113,12 +114,20 @@ int main() {
   // std::cout << state << std::endl;
 
   srand(1);
+
+  std::clock_t time;
+  double duration;
+  time = std::clock();
+
   for (int i = 0; i < Nsteps; i++) {
     for (int j = 0; j < pow(M,2); j++) {
       dv.x = (double) rand() / (RAND_MAX) * mag;
       dv.y = (double) rand() / (RAND_MAX) * mag;
       state.update(j, dv);
     }
+    duration = ( std::clock() - time ) / (double) CLOCKS_PER_SEC;
+    time = std::clock();
+    std::cout << i << " takes " << duration << " s" << std::endl;
   }
   std::cout << "Final state" << std::endl;
   std::cout << state << std::endl;
