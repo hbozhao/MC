@@ -13,6 +13,20 @@ struct Position {
 
 // typedef std::vector<particle> allparticle; //initialization either in main or in a class
 
+class State {
+  double L;
+  std::vector<Particle> ap;
+  int attempt, success;
+
+  public:
+    State(int M, double L, double radius);
+    void update(int id, Position dv);
+    bool check_overlap(Particle &p);
+    friend std::ostream &operator<< (std::ostream & os, State &s);
+    //rdf
+
+};
+
 class Particle {
   private:
     Position pos;
@@ -27,21 +41,10 @@ class Particle {
     double distance(Particle &p, double L);
     bool perturb(Position dv, State *s, double L);
     friend std::ostream &operator<< (std::ostream &os, Particle &p);
+    friend bool State::check_overlap(Particle &p);
     // friend bool State::check_overlap(Particle &p);
 };
 
-class State {
-  double L;
-  std::vector<Particle> ap;
-  int attempt, success;
 
-  public:
-    State(int M, double L, double radius);
-    void update(int id, Position dv);
-    bool check_overlap(Particle &p, double radius);
-    friend std::ostream &operator<< (std::ostream & os, State &s);
-    //rdf
-
-};
 
 #endif

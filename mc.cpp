@@ -11,10 +11,10 @@ double Particle::distance2(Particle &p, double L) {
   double dx = abs(this->pos.x - p.pos.x);
   double dy = abs(this->pos.y - p.pos.y);
   if (dx > L/2) {
-    dx -= L/2;
+    dx -= L;
   }
   if (dy > L/2) {
-    dy -= L/2;
+    dy -= L;
   }
   return pow(dx,2) + pow(dy,2);
 }
@@ -35,7 +35,7 @@ bool Particle::perturb(Position dv, State *s, double L){
   }
   Position pos = {x_new, y_new};
   Particle candidate = Particle(pos, this->radius, this->id);
-  bool isOverlap = s->check_overlap(candidate, this->radius);
+  bool isOverlap = s->check_overlap(candidate);
   if (!isOverlap) {
     *this = candidate;
   }
@@ -50,9 +50,11 @@ std::ostream &operator<< (std::ostream &os, Particle &p) {
   os << "particle " << p.id << " (x,y) = " << p.pos << std::endl;
 }
 
-bool State::check_overlap(Particle &p, double radius){
-  for (auto it = ap.begin(); it != ap.end(); ++it) {
-    if (p.distance2(*it, this->L) < pow(2*radius,2)) {
+bool State::check_overlap(Particle &p){
+  // for (auto it = ap.begin(); it != ap.end(); ++it) {
+  for (int i = 0; i < ap.size(); ++i) {
+    if (i == p.id) continue;
+    if (p.distance2(ap[i], this->L) < pow(2*p.radius,2)) {
       return true;
     }
   }
@@ -69,7 +71,7 @@ State::State(int M, double L, double radius){
     for (int j = 0; j < M; ++j) {
       id = M*i + j;
       pos = {a/2 + a*j, a/2 + a*i};
-      ap.push_back(Particle(pos, radius, id));
+      ap.push_back(Particle(pos, radius, id));  //why is "new" not needed here?
     }
   }
   attempt = 0;
@@ -84,7 +86,10 @@ void State::update(int id, Position dv) {
 };
 
 std::ostream &operator<< (std::ostream & os, State &s) {
-  os << s.success;
+  os << "Number of success = " << s.success << std::endl;
+  for (auto it = s.ap.begin(); it != s.ap.end(); ++it) {
+    os << *it;
+  }
 }
 
 int main() {
@@ -104,6 +109,9 @@ int main() {
   std::cin >> Nsteps;
 
   State state(M, L, radius);
+  // std::cout << "Original" << std::endl;
+  // std::cout << state << std::endl;
+
   srand(1);
   for (int i = 0; i < Nsteps; i++) {
     for (int j = 0; j < pow(M,2); j++) {
@@ -112,5 +120,6 @@ int main() {
       state.update(j, dv);
     }
   }
-  std::cout << state;
+  std::cout << "Final state" << std::endl;
+  std::cout << state << std::endl;
 }
