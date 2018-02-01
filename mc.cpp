@@ -7,6 +7,7 @@
 #include <vector>
 #include <ctime>
 #include "mc.h"
+#include <fstream>
 
 double Particle::distance2(Particle &p, double L) {
   double dx = abs(this->pos.x - p.pos.x);
@@ -114,15 +115,15 @@ int main() {
   int M, Nsteps;
   Position dv;
 
-  //std::cout << "Enter box length" << std::endl;
+  std::cout << "Enter box length" << std::endl;
   std::cin >> L;
-  //std::cout << "Enter the number of particles per length" << std::endl;
+  std::cout << "Enter the number of particles per length" << std::endl;
   std::cin >> M;
-  //std::cout << "Enter the particle radius" << std::endl;
+  std::cout << "Enter the particle radius" << std::endl;
   std::cin >> radius;
-  //std::cout << "Enter the perturbation magnitude" << std::endl;
+  std::cout << "Enter the perturbation magnitude" << std::endl;
   std::cin >> mag;
-  //std::cout << "Enter the number of steps" << std::endl;
+  std::cout << "Enter the number of steps" << std::endl;
   std::cin >> Nsteps;
 
   State state(M, L, radius);
@@ -133,11 +134,14 @@ int main() {
 
   std::clock_t time;
   double duration;
+  std::ofstream mc_file; //("rdf.vtf")
+  mc_file.open ("mc.vtf");
   // time = std::clock();
-  std::cout << "atom " << "0:"<< M*M << "\t" <<"radius " << radius << " name C"<<std::endl;
-  std::cout << "timestep" << std::endl;
-  std::cout << "unitcell" << " " << L << " " << L << " " << 1 << std::endl;
-  std::cout << state<<std::endl;
+
+  mc_file << "atom " << "0:"<< M*M << "\t" <<"radius " << radius << " name C"<<std::endl;
+  mc_file << "timestep" << std::endl;
+  mc_file << "unitcell" << " " << L << " " << L << " " << 1 << std::endl;
+  mc_file << state<<std::endl;
   for (int i = 0; i < Nsteps; i++) {
     for (int j = 0; j < pow(M,2); j++) {
       dv.x = (2*(double) rand() / (RAND_MAX)-1) * mag;
@@ -147,9 +151,10 @@ int main() {
     //duration = ( std::clock() - time ) / (double) CLOCKS_PER_SEC;
     //time = std::clock();
     //std::cout << i << " takes " << duration << " s" << std::endl;
-    std::cout << "timestep" << std::endl;
-    std::cout << state<<std::endl;
+    mc_file << "timestep" << std::endl;
+    mc_file << state<<std::endl;
   }
+  mc_file.close();
   //std::cout << "Final state" << std::endl;
   //std::cout << state << std::endl;
 }
