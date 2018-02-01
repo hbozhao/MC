@@ -31,6 +31,12 @@ bool Particle::perturb(Position dv, State *s, double L){
   if (x_new > L) {
     x_new -= L;
   }
+  if (x_new < 0) {
+    x_new += L;
+  }
+  if (y_new < 0) {
+    y_new += L;
+  }
   if (y_new > L) {
     y_new -= L;
   }
@@ -44,11 +50,15 @@ bool Particle::perturb(Position dv, State *s, double L){
 };
 
 std::ostream &operator<< (std::ostream &os, Position &pos) {
-  os << "(" << pos.x << " " << pos.y << ")";
+  os << pos.x << " " << pos.y << " " << 0.5;
+  return os;
 }
 
 std::ostream &operator<< (std::ostream &os, Particle &p) {
-  os << "particle " << p.id << " (x,y) = " << p.pos << std::endl;
+  //os << "particle " << p.id << " (x,y) = " << p.pos << std::endl;
+    //os << "Ar" << " " << p.pos <<std::endl;
+    os << p.pos <<std::endl;
+    return os;
 }
 
 bool State::check_overlap(Particle &p){
@@ -87,10 +97,16 @@ void State::update(int id, Position dv) {
 };
 
 std::ostream &operator<< (std::ostream & os, State &s) {
-  os << "Number of success = " << s.success << std::endl;
+  //os << "Number of success = " << s.success << std::endl;
+  //os << s.ap.size() << std::endl;
+  //os << "Atoms. Timestep: " << s.attempt << std::endl;
+
   for (auto it = s.ap.begin(); it != s.ap.end(); ++it) {
     os << *it;
   }
+  return os;
+
+
 }
 
 int main() {
@@ -98,15 +114,15 @@ int main() {
   int M, Nsteps;
   Position dv;
 
-  std::cout << "Enter box length" << std::endl;
+  //std::cout << "Enter box length" << std::endl;
   std::cin >> L;
-  std::cout << "Enter the number of particles per length" << std::endl;
+  //std::cout << "Enter the number of particles per length" << std::endl;
   std::cin >> M;
-  std::cout << "Enter the particle radius" << std::endl;
+  //std::cout << "Enter the particle radius" << std::endl;
   std::cin >> radius;
-  std::cout << "Enter the perturbation magnitude" << std::endl;
+  //std::cout << "Enter the perturbation magnitude" << std::endl;
   std::cin >> mag;
-  std::cout << "Enter the number of steps" << std::endl;
+  //std::cout << "Enter the number of steps" << std::endl;
   std::cin >> Nsteps;
 
   State state(M, L, radius);
@@ -117,18 +133,23 @@ int main() {
 
   std::clock_t time;
   double duration;
-  time = std::clock();
-
+  // time = std::clock();
+  std::cout << "atom " << "0:"<< M*M << "\t" <<"radius " << radius << " name C"<<std::endl;
+  std::cout << "timestep" << std::endl;
+  std::cout << "unitcell" << " " << L << " " << L << " " << 1 << std::endl;
+  std::cout << state<<std::endl;
   for (int i = 0; i < Nsteps; i++) {
     for (int j = 0; j < pow(M,2); j++) {
-      dv.x = (double) rand() / (RAND_MAX) * mag;
-      dv.y = (double) rand() / (RAND_MAX) * mag;
+      dv.x = (2*(double) rand() / (RAND_MAX)-1) * mag;
+      dv.y = (2*(double) rand() / (RAND_MAX)-1) * mag;
       state.update(j, dv);
     }
-    duration = ( std::clock() - time ) / (double) CLOCKS_PER_SEC;
-    time = std::clock();
-    std::cout << i << " takes " << duration << " s" << std::endl;
+    //duration = ( std::clock() - time ) / (double) CLOCKS_PER_SEC;
+    //time = std::clock();
+    //std::cout << i << " takes " << duration << " s" << std::endl;
+    std::cout << "timestep" << std::endl;
+    std::cout << state<<std::endl;
   }
-  std::cout << "Final state" << std::endl;
-  std::cout << state << std::endl;
+  //std::cout << "Final state" << std::endl;
+  //std::cout << state << std::endl;
 }
