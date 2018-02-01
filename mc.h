@@ -24,7 +24,7 @@ class State {
     bool check_overlap(Particle &p);
     friend std::ostream &operator<< (std::ostream & os, State &s);
     //rdf
-    void cumrdf(std::vector<double> &prevRDF);
+    void cumrdf(std::vector<double> &prevRDF, double radius);
 };
 
 class Particle {

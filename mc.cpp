@@ -108,30 +108,6 @@ std::ostream &operator<< (std::ostream & os, State &s) {
   for (auto it = s.ap.begin(); it != s.ap.end(); ++it) {
     os << *it;
   }
-}
-
-void State::cumrdf(std::vector<double> &prevRDF) {
-  double dist, binsize, maxdist, density;
-  int binnum, nbin, np;
-  nbin = prevRDF.size();
-  maxdist = sqrt(2)/2*L;
-  binsize = maxdist / nbin;
-  np = ap.size();
-  density = np/pow(L,2);
-  std::vector<double> hist(nbin, 0);
-  for (int i = 0; i < np; i++) {
-    for (int j = i+1; j < np; j++) {
-      dist = ap[i].distance(ap[j], L);
-      binnum = (int) floor(dist/binsize);
-      if (binnum == nbin) binnum--;
-      // std::cout << binnum;
-      hist[binnum] += 2;
-    }
-  }
-  for (int i = 0; i < nbin; i++) {
-    prevRDF[i] += hist[i] / (np*(np-1)) / (M_PI*(pow((i+1)*binsize,2)-pow(i*binsize,2))*density);
-  }
-    // std::cout << prevRDF[i];
   return os;
 }
 
@@ -141,6 +117,39 @@ std::ostream &operator<< (std::ostream &os, std::vector<double> &v) {
   }
   return os;
 }
+
+void State::cumrdf(std::vector<double> &prevRDF, double radius) {
+  double dist, binsize, maxdist, density, norm;
+  int binnum, nbin, np;
+  double hist_tot = 0;
+  nbin = prevRDF.size();
+  maxdist = 10*radius;
+  binsize = maxdist / nbin;
+  np = ap.size();
+  density = np/pow(L,2);
+  std::vector<double> hist(nbin, 0);
+
+  for (int i = 0; i < np; i++) {
+    for (int j = i+1; j < np; j++) {
+      dist = ap[i].distance(ap[j], L);
+      binnum = (int) floor(dist/binsize);
+      if (binnum >= nbin) continue;
+      // std::cout << binnum;
+      hist[binnum]++;
+      hist_tot++;
+    }
+  }
+  norm = (  (M_PI*pow(maxdist,2)) - 16/3/L*pow(maxdist,3) + 1/(2*pow(L,2))*(pow(maxdist,4)) )/hist_tot;
+  for (int i = 0; i < nbin; i++) {
+    prevRDF[i] += hist[i]*norm/(M_PI*(pow((i+1)*binsize,2)-pow(i*binsize,2))
+    -16/3/L*(pow((i+1)*binsize,3)-pow(i*binsize,3))
+    +1/(2*pow(L,2))*(pow((i+1)*binsize,4)-pow(i*binsize,4)));
+  }
+  std::cout << prevRDF;
+    // std::cout << prevRDF[i];
+}
+
+
 
 int main() {
   double L, radius, mag;
@@ -191,7 +200,7 @@ int main() {
     // duration = ( std::clock() - time ) / (double) CLOCKS_PER_SEC;
     // time = std::clock();
     // std::cout << i << " takes " << duration << " s" << std::endl;
-    state.cumrdf(RDF);
+    state.cumrdf(RDF,radius);
   }
   mc_file.close();
 
@@ -202,5 +211,6 @@ int main() {
   rdf_file.open ("rdf.ave");
   rdf_file << RDF << std::endl;
   rdf_file.close();
+  std::cout << "DONE!!";
 
 }
