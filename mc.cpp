@@ -11,6 +11,7 @@
 
 const double PI  =3.141592653589793238463;
 
+<<<<<<< HEAD
 double Particle::distance2(Particle &p, double L, bool flag) {
   double dx = sqrt(pow((pos.x - p.pos.x),2));
   double dy = sqrt(pow((pos.y - p.pos.y),2));
@@ -18,6 +19,11 @@ double Particle::distance2(Particle &p, double L, bool flag) {
     std::cout << pos.x << p.pos.x << std::endl;
     std::cout << id << p.id << std::endl;
   }
+=======
+double Particle::distance2(Particle &p, double L) {
+  double dx = sqrt(pow((this->pos.x - p.pos.x),2));
+  double dy = sqrt(pow((this->pos.y - p.pos.y),2));
+>>>>>>> final
   if (dx > L/2) {
     dx = dx - L;
   }
@@ -145,12 +151,16 @@ void State::cumrdf(std::vector<double> &prevRDF, double radius) {
       hist_tot+=2;
     }
   }
-  norm = (  (M_PI*pow(maxdist,2)) - 16/3/L*pow(maxdist,3) + 1/(2*pow(L,2))*(pow(maxdist,4)) )/hist_tot;
+  norm = ((M_PI*pow(maxdist,2)))/hist_tot; //- 16/3/L*pow(maxdist,3) + 1/(2*pow(L,2))*(pow(maxdist,4)) )
   for (int i = 0; i < nbin; i++) {
-    prevRDF[i] += hist[i]/(M_PI*(pow((i+1)*binsize,2)-pow(i*binsize,2)));
-    //-16/3/L*(pow((i+1)*binsize,3)-pow(i*binsize,3))
-    //+1/(2*pow(L,2))*(pow((i+1)*binsize,4)-pow(i*binsize,4))
+    prevRDF[i] += hist[i]* norm /(M_PI*(pow((i+1)*binsize,2)-pow(i*binsize,2)));
+    // -16/3/L*(pow((i+1)*binsize,3)-pow(i*binsize,3))
+    // +1/(2*pow(L,2))*(pow((i+1)*binsize,4)-pow(i*binsize,4)));
   }
+<<<<<<< HEAD
+=======
+
+>>>>>>> final
   // std::cout << prevRDF;
     // std::cout << prevRDF[i];
 }
