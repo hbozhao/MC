@@ -12,8 +12,8 @@
 const double PI  =3.141592653589793238463;
 
 double Particle::distance2(Particle &p, double L) {
-  double dx = abs(this->pos.x - p.pos.x);
-  double dy = abs(this->pos.y - p.pos.y);
+  double dx = sqrt(pow((this->pos.x - p.pos.x),2));
+  double dy = sqrt(pow((this->pos.y - p.pos.y),2));
   if (dx > L/2) {
     dx -= L;
   }
@@ -43,8 +43,8 @@ bool Particle::perturb(Position dv, State *s, double L){
   if (y_new < 0) {
     y_new += L;
   }
-  Position pos = {x_new, y_new};
-  Particle candidate = Particle(pos, this->radius, this->id);
+  Position pos_new = {x_new, y_new};
+  Particle candidate = Particle(pos_new, this->radius, this->id);
   bool isOverlap = s->check_overlap(candidate);
   if (!isOverlap) {
     *this = candidate;
@@ -53,7 +53,7 @@ bool Particle::perturb(Position dv, State *s, double L){
 };
 
 std::ostream &operator<< (std::ostream &os, Position &pos) {
-  os << pos.x << " " << pos.y << " " << 0.5;
+  os << pos.x << " " << pos.y << " " << 0;
   return os;
 }
 
@@ -85,7 +85,7 @@ State::State(int M, double L, double radius){
     for (int j = 0; j < M; ++j) {
       id = M*i + j;
       pos = {a/2 + a*j, a/2 + a*i};
-      ap.push_back(Particle(pos, radius, id));  //why is "new" not needed here?
+      ap.emplace_back(Particle(pos, radius, id));  //why is "new" not needed here?
     }
   }
   attempt = 0;
@@ -139,13 +139,14 @@ void State::cumrdf(std::vector<double> &prevRDF, double radius) {
       hist_tot+=2;
     }
   }
-  norm = (  (M_PI*pow(maxdist,2)) - 16/3/L*pow(maxdist,3) + 1/(2*pow(L,2))*(pow(maxdist,4)) )/hist_tot;
+  norm = ((M_PI*pow(maxdist,2)))/hist_tot; //- 16/3/L*pow(maxdist,3) + 1/(2*pow(L,2))*(pow(maxdist,4)) )
   for (int i = 0; i < nbin; i++) {
-    prevRDF[i] += hist[i]/(M_PI*(pow((i+1)*binsize,2)-pow(i*binsize,2)));
-    //-16/3/L*(pow((i+1)*binsize,3)-pow(i*binsize,3))
-    //+1/(2*pow(L,2))*(pow((i+1)*binsize,4)-pow(i*binsize,4))
+    prevRDF[i] += hist[i]* norm /(M_PI*(pow((i+1)*binsize,2)-pow(i*binsize,2)));
+    // -16/3/L*(pow((i+1)*binsize,3)-pow(i*binsize,3))
+    // +1/(2*pow(L,2))*(pow((i+1)*binsize,4)-pow(i*binsize,4)));
   }
-  std::cout << prevRDF;
+
+  // std::cout << prevRDF;
     // std::cout << prevRDF[i];
 }
 
@@ -186,7 +187,7 @@ int main() {
 
   mc_file << "atom " << "0:"<< M*M << "\t" <<"radius " << radius << " name C"<<std::endl;
   mc_file << "timestep" << std::endl;
-  mc_file << "unitcell" << " " << L << " " << L << " " << 1 << std::endl;
+  mc_file << "unitcell" << " " << L << " " << L << " " << 0 << std::endl;
   mc_file << state<<std::endl;
   for (int i = 0; i < Nsteps; i++) {
     for (int j = 0; j < pow(M,2); j++) {
