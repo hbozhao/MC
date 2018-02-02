@@ -11,19 +11,10 @@
 
 const double PI  =3.141592653589793238463;
 
-<<<<<<< HEAD
-double Particle::distance2(Particle &p, double L, bool flag) {
-  double dx = sqrt(pow((pos.x - p.pos.x),2));
-  double dy = sqrt(pow((pos.y - p.pos.y),2));
-  if (flag) {
-    std::cout << pos.x << p.pos.x << std::endl;
-    std::cout << id << p.id << std::endl;
-  }
-=======
 double Particle::distance2(Particle &p, double L) {
   double dx = sqrt(pow((this->pos.x - p.pos.x),2));
   double dy = sqrt(pow((this->pos.y - p.pos.y),2));
->>>>>>> final
+
   if (dx > L/2) {
     dx = dx - L;
   }
@@ -34,7 +25,7 @@ double Particle::distance2(Particle &p, double L) {
 }
 
 double Particle::distance(Particle &p, double L) {
-  return sqrt(this->distance2(p, L, false));
+  return sqrt(this->distance2(p, L));
 }
 
 bool Particle::perturb(Position dv, State *s, double L){
@@ -78,9 +69,9 @@ bool State::check_overlap(Particle &p){
   // for (auto it = ap.begin(); it != ap.end(); ++it) {
   for (int i = 0; i < ap.size(); ++i) {
     if (ap[i].id == p.id) continue;
-    if (p.distance2(ap[i], this->L, false) < pow(2*p.radius,2)) {
-      std::cout << p.distance2(ap[i], this->L, true) << std::endl;
-      std::cout << ap[i].id << " " << ap[i] << " " << p.id << " " << p << " " << ap[i].pos.x - p.pos.x << ap[i].distance2(p, this->L, false) << p.radius << std::endl;
+    if (p.distance2(ap[i], this->L) < pow(2*p.radius,2)) {
+      // std::cout << p.distance2(ap[i], this->L, true) << std::endl;
+      // std::cout << ap[i].id << " " << ap[i] << " " << p.id << " " << p << " " << ap[i].pos.x - p.pos.x << ap[i].distance2(p, this->L, false) << p.radius << std::endl;
       return true;
     }
   }
@@ -157,10 +148,7 @@ void State::cumrdf(std::vector<double> &prevRDF, double radius) {
     // -16/3/L*(pow((i+1)*binsize,3)-pow(i*binsize,3))
     // +1/(2*pow(L,2))*(pow((i+1)*binsize,4)-pow(i*binsize,4)));
   }
-<<<<<<< HEAD
-=======
 
->>>>>>> final
   // std::cout << prevRDF;
     // std::cout << prevRDF[i];
 }
