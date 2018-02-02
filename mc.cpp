@@ -135,15 +135,15 @@ void State::cumrdf(std::vector<double> &prevRDF, double radius) {
       binnum = (int) floor(dist/binsize);
       if (binnum >= nbin) continue;
       // std::cout << binnum;
-      hist[binnum]++;
-      hist_tot++;
+      hist[binnum]+=2;
+      hist_tot+=2;
     }
   }
   norm = (  (M_PI*pow(maxdist,2)) - 16/3/L*pow(maxdist,3) + 1/(2*pow(L,2))*(pow(maxdist,4)) )/hist_tot;
   for (int i = 0; i < nbin; i++) {
-    prevRDF[i] += hist[i]*norm/(M_PI*(pow((i+1)*binsize,2)-pow(i*binsize,2))
-    -16/3/L*(pow((i+1)*binsize,3)-pow(i*binsize,3))
-    +1/(2*pow(L,2))*(pow((i+1)*binsize,4)-pow(i*binsize,4)));
+    prevRDF[i] += hist[i]/(M_PI*(pow((i+1)*binsize,2)-pow(i*binsize,2)));
+    //-16/3/L*(pow((i+1)*binsize,3)-pow(i*binsize,3))
+    //+1/(2*pow(L,2))*(pow((i+1)*binsize,4)-pow(i*binsize,4))
   }
   std::cout << prevRDF;
     // std::cout << prevRDF[i];
