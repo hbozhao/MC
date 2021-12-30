@@ -37,7 +37,7 @@ class Particle {
 
 
     Particle(Position pos, double radius, int id): pos(pos), radius(radius), id(id) {};
-    double distance2(Particle &p, double L, bool flag);
+    double distance2(Particle &p, double L);
     double distance(Particle &p, double L);
     bool perturb(Position dv, State *s, double L);
     friend std::ostream &operator<< (std::ostream &os, Particle &p);
